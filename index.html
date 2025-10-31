@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Golden Black Calendar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      outline: none;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    :root {
+      --bg-color: #000;
+      --text-golden: #ffd700;
+      --accent-golden: #b8860b;
+      --main-orange: #ea580c;
+    }
+
+    html {
+      font-size: 62.5%;
+    }
+
+    body {
+      background: #fff;
+      color: var(--text-golden);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .calendar {
+      background: var(--bg-color);
+      width: 100%;
+      max-width: 800px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(234, 88, 12, .2);
+      overflow: hidden;
+      border: 1px solid rgba(255, 215, 0, .2);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: var(--bg-color);
+    }
+
+    .header button {
+      background: rgba(255, 215, 0, .1);
+      border: 2px solid var(--text-golden);
+      color: var(--text-golden);
+      font-size: 36px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all .3s;
+    }
+
+    .header button:hover {
+      background: var(--text-golden);
+      color: var(--main-orange);
+      transform: scale(1.1);
+    }
+
+    .header h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: aqua;
+      text-shadow: 0 0 10px rgba(255, 215, 0, .3);
+    }
+
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      background: rgba(255, 215, 0, .05);
+      padding: 18px 0;
+      font-weight: 600;
+      font-size: 18px;
+      color: #ea580c;
+    }
+
+    .dates {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      background: #000;
+      padding: 10px;
+    }
+
+    .date {
+      position: relative;
+      background: rgba(255, 255, 255, .05);
+      padding: 18px 0 30px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-golden);
+      transition: all .3s;
+      border-radius: 8px;
+    }
+
+    .date:hover:not(.empty) {
+      background: var(--accent-golden);
+      color: skyblue;
+      transform: scale(1.05);
+      font-weight: bold;
+    }
+
+    .date.empty {
+      background: yellowgreen;
+      cursor: default;
+    }
+
+    .date.today {
+      background: var(--text-golden);
+      color: #000;
+      font-weight: bold;
+      font-size: 22px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, .6);
+    }
+
+    .date.today:hover {
+      background: #ea580c;
+      transform: scale(1.1);
+    }
+
+    .date.sunday,
+    .date.holiday {
+      color: #ff4500;
+      font-weight: bold;
+    }
+
+    .holiday-name {
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      right: 0;
+      font-size: 1.1rem;
+      color: #ffcc00;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 4px;
+    }
+
+    #clock {
+      font-size: 2.2rem;
+      color: #ffd700;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .search-container {
+      padding: 20px;
+      background: rgba(255, 215, 0, .1);
+      border-top: 1px solid rgba(255, 215, 0, .2);
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 1.8rem;
+      border: 2px solid var(--text-golden);
+      border-radius: 50px;
+      background: rgba(0, 0, 0, .3);
+      color: var(--text-golden);
+      outline: none;
+      transition: all .3s;
+    }
+
+    #searchInput::placeholder {
+      color: rgba(255, 215, 0, .6);
+    }
+
+    #searchInput:focus {
+      border-color: var(--main-orange);
+      box-shadow: 0 0 15px rgba(234, 88, 12, .4);
+    }
+
+    @media (max-width: 600px) {
+      .header button {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+      }
+      .header h2 {
+        font-size: 20px;
+      }
+      .days {
+        font-size: 14px;
+        padding: 12px 0;
+      }
+      .date {
+        font-size: 16px;
+        padding: 14px 0 26px;
+      }
+      .holiday-name {
+        font-size: 1rem;
+      }
+      #clock {
+        font-size: 2rem;
+      }
+      #searchInput {
+        font-size: 1.6rem;
+        padding: 12px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calendar">
+    <div class="header">
+      <button id="prev"><</button>
+      <h2 id="monthYear"></h2>
+      <button id="next">></button>
+    </div>
+
+    <div id="clock">4:14:00 PM</div>
+
+    <div class="days">
+      <div>Sun</div>
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+    </div>
+
+    <div class="dates" id="dates"></div>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="search:">
+    </div>
+  </div>
+
+  <script>
+    const monthYear = document.getElementById('monthYear');
+    const datesContainer = document.getElementById('dates');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const clock = document.getElementById('clock');
+    const searchInput = document.getElementById('searchInput');
+
+    let currentDate = new Date();
+
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    const shortMonths = monthNames.map(m => m.slice(0, 3).toLowerCase());
+
+    const holidays = [
+      { month: 0, day: 1, name: "New Year" },
+      { month: 0, day: 7, name: "Ethiopian Christmas" },
+      { month: 0, day: 19, name: "Epiphany / Timkat" },
+      { month: 2, day: 2, name: "Adwa Victory Day" },
+      { month: 3, day: 1, name: "International Labor Day" },
+      { month: 4, day: 5, name: "Patriots' Day" },
+      { month: 4, day: 28, name: "Derg Downfall Day" },
+      { month: 8, day: 11, name: "Ethiopian New Year" },
+      { month: 8, day: 27, name: "Meskel" },
+      { month: 3, day: 18, name: "Eid al-Fitr" },
+      { month: 4, day: 18, name: "Good Friday" },
+      { month: 4, day: 20, name: "Easter" },
+      { month: 6, day: 6, name: "Eid al-Adha" },
+      { month: 9, day: 4, name: "The Prophet's Birthday" }
+    ];
+
+    function isHoliday(year, month, day) {
+      return holidays.find(h => h.month === month && h.day === day);
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      monthYear.textContent = `${monthNames[month]} ${year}`;
+      datesContainer.innerHTML = '';
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+      const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'date empty';
+        datesContainer.appendChild(empty);
+      }
+
+      for (let date = 1; date <= lastDate; date++) {
+        const el = document.createElement('div');
+        el.className = 'date';
+        el.textContent = date;
+
+        const fullDate = new Date(year, month, date);
+        const isSunday = fullDate.getDay() === 0;
+        const holiday = isHoliday(year, month, date);
+
+        if (isSunday) el.classList.add('sunday');
+        if (holiday) {
+          el.classList.add('holiday');
+          const name = document.createElement('div');
+          name.className = 'holiday-name';
+          name.textContent = holiday.name;
+          el.appendChild(name);
+        }
+
+        if (isCurrentMonth && date === today.getDate()) {
+          el.classList.add('today');
+        }
+
+        el.dataset.year = year;
+        el.dataset.month = month;
+        el.dataset.day = date;
+
+        datesContainer.appendChild(el);
+      }
+    }
+
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+
+      clock.textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+    }
+
+    function searchDate(input) {
+      input = input.trim().toLowerCase();
+      if (!input) return;
+
+      const parts = input.split(/\s+|[\/\-\.]/).filter(Boolean);
+      let targetMonth = -1, targetDay = -1, targetYear = new Date().getFullYear();
+
+      const numbers = parts.filter(p => /^\d+$/.test(p)).map(Number);
+      const monthStr = parts.find(p => isNaN(p));
+
+      if (monthStr) {
+        const fullIdx = monthNames.findIndex(m => m.toLowerCase().startsWith(monthStr));
+        const shortIdx = shortMonths.indexOf(monthStr);
+        targetMonth = fullIdx !== -1 ? fullIdx : shortIdx;
+      }
+
+      if (numbers.length >= 1) targetDay = numbers[0];
+      if (numbers.length >= 2) targetYear = numbers[1];
+      if (targetYear < 100) targetYear += 2000;
+
+      if (targetMonth === -1 && numbers.length >= 2 && numbers[0] >= 1 && numbers[0] <= 12) {
+        targetMonth = numbers[0] - 1;
+        targetDay = numbers[1];
+        if (numbers.length >= 3) targetYear = numbers[2];
+        if (targetYear < 100) targetYear += 2000;
+      }
+
+      if (targetMonth >= 0 && targetMonth <= 11 && targetDay >= 1 && targetDay <= 31 && targetYear >= 1900 && targetYear <= 2100) {
+        currentDate = new Date(targetYear, targetMonth, 1);
+        renderCalendar();
+
+        setTimeout(() => {
+          const targetEl = document.querySelector(`.date[data-year="${targetYear}"][data-month="${targetMonth}"][data-day="${targetDay}"]`);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl.style.background = '#ea580c';
+            targetEl.style.color = '#fff';
+            setTimeout(() => {
+              if (targetEl.classList.contains('today')) {
+                targetEl.style.background = 'var(--text-golden)';
+                targetEl.style.color = '#000';
+              } else {
+                targetEl.style.background = 'rgba(255,255,255,.05)';
+                targetEl.style.color = 'var(--text-golden)';
+              }
+            }, 1500);
+          }
+        }, 100);
+
+        searchInput.value = '';
+      }
+    }
+
+    prevBtn.onclick = () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    };
+
+    nextBtn.onclick = () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    };
+
+    searchInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        searchDate(searchInput.value);
+      }
+    });
+
+    const startTime = new Date();
+    startTime.setHours(16, 14, 0, 0); 
+
+    function updateClockFromStart() {
+      startTime.setSeconds(startTime.getSeconds() + 1);
+      let hours = startTime.getHours();
+      const minutes = String(startTime.getMinutes()).padStart(2, '0');
+      const seconds = String(startTime.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+
+      clock.textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+    }
+
+    renderCalendar();
+    updateClockFromStart();
+    setInterval(updateClockFromStart, 1000);
+  </script>
+
+</body>
+</html>
